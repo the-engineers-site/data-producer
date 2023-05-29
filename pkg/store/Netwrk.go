@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -23,7 +24,6 @@ func init() {
 }
 
 func Send(message []byte) {
-
 	// Create a wait group to wait for all Go routines to finish
 	var wg sync.WaitGroup
 	// Launch Go routines
@@ -40,8 +40,8 @@ func Send(message []byte) {
 }
 
 func sendLineAsync(message []byte) {
-	_, err := connection.Write(message)
+	_, err := fmt.Fprintln(connection, message)
 	if err != nil {
-		log.Println("error while producing message", err.Error())
+		log.Println("Error while publishing ", err)
 	}
 }
