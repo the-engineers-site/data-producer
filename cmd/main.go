@@ -42,6 +42,7 @@ func main() {
 		var buffer bytes.Buffer
 		err = tmpl.Execute(&buffer, getRandomObject())
 		store.Send(buffer.String())
+		time.Sleep(1 * time.Second)
 	}
 
 	// Dec 1 06:46:09 10.246.7.37 Bluecoat 01/12/2022:11:44:19 GMT
