@@ -25,7 +25,7 @@ type Formatter struct {
 func main() {
 	log.Println("starting service")
 	logLine := os.Getenv("LOG")
-	logMessage := "test {{ .DateSyslog}} {{ .PrivateIp }} {{ .Hostname }}|src={{ .PrivateIp }} |srcport=63917|dst={{ .PublicIp }} |dstport=443|username=-|devicetime=[{{ .FullTimeStamp }}]|s-action=TCP_TUNNELED|sc-status=200|cs-method=CONNECT|time-taken=123918|sc-bytes=14767|cs-bytes=13941|cs-uri-scheme=tcp|cs-host={{ .Url }} |cs-uri-path=/|cs-uri-query=-|cs-uri-extension=-|cs-auth-group=-|rs(Content-Type)=-|cs(User-Agent)=golang-producer|cs(Referer)=-|sc-filter-result=OBSERVED|filter-category=Chat_(IM)/SMS|cs-userdn=-|cs-uri={{ .FullTimeStamp }} /|x-virus-id=-|s-ip={{ .PrivateIp }}|s-sitename=http.proxy"
+	logMessage := "test {{ .DateSyslog}} {{ .PrivateIp }} {{ .Hostname }}|src={{ .PrivateIp }}|srcport=63917|dst={{ .PublicIp }}|dstport=443|username=-|devicetime=[{{ .FullTimeStamp }}]|s-action=TCP_TUNNELED|sc-status=200|cs-method=CONNECT|time-taken=123918|sc-bytes=14767|cs-bytes=13941|cs-uri-scheme=tcp|cs-host={{ .Url }}|cs-uri-path=/|cs-uri-query=-|cs-uri-extension=-|cs-auth-group=-|rs(Content-Type)=-|cs(User-Agent)=golang-producer|cs(Referer)=-|sc-filter-result=OBSERVED|filter-category=Chat_(IM)/SMS|cs-userdn=-|cs-uri={{ .FullTimeStamp }}/|x-virus-id=-|s-ip={{ .PrivateIp }}|s-sitename=http.proxy"
 
 	if logLine == "" {
 		logLine = logMessage
