@@ -41,7 +41,7 @@ func main() {
 		rand.Seed(time.Now().UnixNano())
 		var buffer bytes.Buffer
 		err = tmpl.Execute(&buffer, getRandomObject())
-		store.Send(buffer.Bytes())
+		store.Send(buffer.String())
 	}
 
 	// Dec 1 06:46:09 10.246.7.37 Bluecoat 01/12/2022:11:44:19 GMT

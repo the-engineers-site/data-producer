@@ -23,13 +23,13 @@ func init() {
 	runtime.GOMAXPROCS(doubledCPUs)
 }
 
-func Send(message []byte) {
+func Send(message string) {
 	// Create a wait group to wait for all Go routines to finish
 	var wg sync.WaitGroup
 	// Launch Go routines
 	for i := 0; i < doubledCPUs; i++ {
 		wg.Add(1)
-		go func(message []byte) {
+		go func(message string) {
 			defer wg.Done()
 			sendLineAsync(message)
 		}(message)
@@ -39,7 +39,7 @@ func Send(message []byte) {
 	wg.Wait()
 }
 
-func sendLineAsync(message []byte) {
+func sendLineAsync(message string) {
 	_, err := fmt.Fprintln(connection, message)
 	if err != nil {
 		log.Println("Error while publishing ", err)
