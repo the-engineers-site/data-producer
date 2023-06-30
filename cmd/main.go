@@ -3,13 +3,15 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/the-engineers-site/data-producer/pkg/store"
 	"log"
 	"math/rand"
 	"net"
 	"os"
 	"text/template"
 	"time"
+
+	fake "github.com/brianvoe/gofakeit/v6"
+	"github.com/the-engineers-site/data-producer/pkg/store"
 )
 
 type Formatter struct {
@@ -20,6 +22,8 @@ type Formatter struct {
 	Hostname      string
 	Port          int
 	Url           string
+	Username      string
+	RandomNumber  int
 }
 
 func main() {
@@ -30,7 +34,6 @@ func main() {
 	if logLine == "" {
 		logLine = logMessage
 	}
-
 	tmpl, err := template.New("myTemplate").Parse(logLine)
 	if err != nil {
 		fmt.Println("Error parsing template:", err)
@@ -52,11 +55,13 @@ func getRandomObject() (formatter Formatter) {
 	formatter = Formatter{
 		DateSyslog:    time.Now().Format("Jan 2 15:04:05"),
 		FullTimeStamp: time.Now().Format("01/02/2006:15:04:05 MST"),
-		PrivateIp:     generateRandomIP("10.0.0.0/8").String(),
-		PublicIp:      generateRandomIP("54.0.0.0/8").String(),
+		PrivateIp:     fake.IPv4Address(),
+		PublicIp:      fake.IPv4Address(),
 		Hostname:      generateRandomHostname(),
 		Port:          generateRandomPort(),
 		Url:           generateRandomUrl(),
+		RandomNumber:  fake.Number(0, 200000),
+		Username:      fake.Username(),
 	}
 	return formatter
 }
