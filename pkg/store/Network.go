@@ -15,6 +15,7 @@ import (
 
 type Formatter struct {
 	DateSyslog    string
+	LongTimeStamp string
 	FullTimeStamp string
 	PrivateIp     string
 	PublicIp      string
@@ -50,6 +51,7 @@ func getRandomObject() (formatter Formatter) {
 	formatter = Formatter{
 		DateSyslog:    time.Now().Format("Jan 2 15:04:05"),
 		FullTimeStamp: time.Now().Format("01/02/2006:15:04:05 MST"),
+		LongTimeStamp: time.Now().Format("2006-02-01 15:04:05"),
 		PrivateIp:     fake.IPv4Address(),
 		PublicIp:      fake.IPv4Address(),
 		Hostname:      generateRandomHostname(),
