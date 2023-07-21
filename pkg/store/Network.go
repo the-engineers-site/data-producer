@@ -1,47 +1,102 @@
 package store
 
 import (
+	"bytes"
 	"fmt"
+	fake "github.com/brianvoe/gofakeit/v6"
+	"github.com/the-engineers-site/data-producer/pkg/logger"
+	"go.uber.org/zap"
+	"html/template"
 	"log"
+	"math/rand"
 	"net"
-	"os"
-	"runtime"
-	"strconv"
-	"sync"
+	"time"
 )
 
-var connection, _ = net.Dial("tcp", os.Getenv("DESTINATION_IP"))
+type Formatter struct {
+	DateSyslog    string
+	FullTimeStamp string
+	PrivateIp     string
+	PublicIp      string
+	Hostname      string
+	Port          int
+	Url           string
+	Username      string
+	RandomNumber  int
+}
 
-// Double the number of CPUs
-var doubledCPUs, err = strconv.Atoi(os.Getenv("EPS"))
-
-func init() {
+func Send(counter *int, connection *net.Conn, message string) {
+	tmpl, err := template.New("myTemplate").Parse(message)
 	if err != nil {
-		doubledCPUs = runtime.NumCPU()
+		logger.GetLogger().Error("error while processing template", zap.Error(err))
+		return
 	}
-
-	runtime.GOMAXPROCS(doubledCPUs)
+	rand.Seed(time.Now().UnixNano())
+	var buffer bytes.Buffer
+	err = tmpl.Execute(&buffer, getRandomObject())
+	sendLineAsync(counter, connection, buffer.String())
 }
 
-func Send(message string) {
-	// Create a wait group to wait for all Go routines to finish
-	var wg sync.WaitGroup
-	// Launch Go routines
-	for i := 0; i < doubledCPUs; i++ {
-		wg.Add(1)
-		go func(message string) {
-			defer wg.Done()
-			sendLineAsync(message)
-		}(message)
-	}
-
-	// Wait for all Go routines to finish
-	wg.Wait()
-}
-
-func sendLineAsync(message string) {
-	_, err := fmt.Fprintln(connection, message)
+func sendLineAsync(count *int, connection *net.Conn, message string) {
+	_, err := fmt.Fprintln(*connection, message)
 	if err != nil {
 		log.Println("Error while publishing ", err)
 	}
+	time.Sleep(1 * time.Second)
+	*count++
+}
+
+func getRandomObject() (formatter Formatter) {
+	formatter = Formatter{
+		DateSyslog:    time.Now().Format("Jan 2 15:04:05"),
+		FullTimeStamp: time.Now().Format("01/02/2006:15:04:05 MST"),
+		PrivateIp:     fake.IPv4Address(),
+		PublicIp:      fake.IPv4Address(),
+		Hostname:      generateRandomHostname(),
+		Port:          generateRandomPort(),
+		Url:           generateRandomUrl(),
+		RandomNumber:  fake.Number(0, 200000),
+		Username:      fake.Username(),
+	}
+	return formatter
+}
+
+func generateRandomPort() int {
+	// Generate a random number within the valid port number range (0 to 65535)
+	port := rand.Intn(65536)
+
+	return port
+}
+
+func generateRandomUrl() string {
+	// Generate a random string of length 8 for the hostname
+	randomString := generateRandomString(4) + "." + generateRandomString(4)
+
+	// Combine the random string with the base domain
+	hostname := randomString + ".databahn.ai"
+
+	return hostname
+}
+
+func generateRandomHostname() string {
+	// Generate a random string of length 8 for the hostname
+	randomString := generateRandomString(8)
+
+	// Combine the random string with the base domain
+	hostname := randomString + ".databahn.ai"
+
+	return hostname
+}
+
+func generateRandomString(length int) string {
+	// Characters allowed in the random string
+	chars := "abcdefghijklmnopqrstuvwxyz0123456789"
+
+	// Generate a random string of specified length
+	randomString := make([]byte, length)
+	for i := 0; i < length; i++ {
+		randomString[i] = chars[rand.Intn(len(chars))]
+	}
+
+	return string(randomString)
 }
