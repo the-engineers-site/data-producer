@@ -19,7 +19,6 @@ func init() {
 	if err != nil {
 		doubledCPUs = runtime.NumCPU()
 	}
-
 	runtime.GOMAXPROCS(doubledCPUs)
 }
 
